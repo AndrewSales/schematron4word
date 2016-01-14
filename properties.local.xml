@@ -3,7 +3,6 @@
 <properties version="1.0">
     <comment>Local properties for WordML Schematron Ant tasks.</comment>
     
-    <entry key="wordml.file">odf-demo.xml</entry>
-    <entry key="schema">odf-demo.sch</entry>
+    <entry key="my.property">GOES HERE</entry>
     
 </properties>
