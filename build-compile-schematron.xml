@@ -1,0 +1,43 @@
+<project name="compile-schematron" basedir=".">
+ 
+ <!-- XML file of properties determining or describing local
+     configuration. -->
+ <property
+  name="properties.local.xml"
+  location="${basedir}/properties.local.xml"/>
+ <property
+  file="${properties.local.xml}"/>
+ 
+ <property
+  name="properties.xml"
+  location="${basedir}/properties.xml"/>
+ <property
+  file="${properties.xml}"/>
+ 
+ <basename property="schema.filename" file="${schema}" suffix=".sch"/>
+ <property name="schema.compiled" location="${schema.filename}-compiled.sch"/>
+ <property name="schematron.xsl.dir" location="${xsl.dir}/iso-schematron-xslt2/"/>
+ 
+ <target name="compile.schematron" description="compiles a Schematron schema">
+  <echo message="compiling Schematron schema ${schema}"/>
+
+  <!-- 1. process inclusions -->
+  <echo message="processing inclusions..."/>
+  <xslt description="processes schema inclusions" classpath="${saxon.classpath}"
+   style="${schematron.xsl.dir}/iso_dsdl_include.xsl" in="${schema}"
+   out="${schema.filename}-included.sch"/>
+
+  <!-- 2. expand abstract rules -->
+  <echo message="expanding abstract rules..."/>
+  <xslt description="expands abstract patterns" classpath="${saxon.classpath}"
+   style="${schematron.xsl.dir}/iso_abstract_expand.xsl" in="${schema.filename}-included.sch"
+   out="${schema.filename}-expanded.sch"/>
+
+  <!-- 3. compile schema to XSLT -->
+  <echo message="compiling to ${schema.compiled}..."/>
+  <xslt description="compiles schema to XSLT generating SVRL" classpath="${saxon.classpath}"
+   style="${schematron.xsl.dir}/iso_svrl_for_xslt2.xsl" in="${schema.filename}-expanded.sch"
+   out="${schema.compiled}"/>
+
+ </target>
+</project>

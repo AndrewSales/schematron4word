@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties version="1.0">
+    <comment>Properties for WordML Schematron Ant tasks.</comment>
+    
+    <!-- location of XSLT engine -->
+    <entry key="saxon.classpath">./lib/saxon9he.jar</entry>
+    
+    <!-- location of XSLT -->
+    <entry key="xsl.dir">xsl/</entry>
+    
+    <entry key="wordml.file">demo.xml</entry>
+    
+    <entry key="schema">demo.sch</entry>
+    
+</properties>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Apache Ant build file to validate WordML (2003 version) using Schematron.
+  
+  The main target is wordqa, which cues this pipeline:
+      1. WordML Schematron -> SVRL
+      2. SVRL -> errs2xsl -> XSL
+      3. WordML -> (2) -> annotated WordML.
+      
+  Author: Andrew Sales
+  Date: 20140325
+  Revision: 0.1
+  Comments:
+-->
+<project basedir="." default="wordqa" name="ANTProject">
+  
+  <import file="build-compile-schematron.xml"/>
+  
+  <!-- XML file of properties determining or describing local
+     configuration. -->
+  <property
+    name="properties.local.xml"
+    location="${basedir}/properties.local.xml"/>
+  <property
+    file="${properties.local.xml}"/>
+  
+  <!-- File of properties determining or describing system configuration. -->
+  <property name="properties.xml"
+    value="${basedir}/properties.xml"/>
+  <property file="${properties.xml}"/>
+  
+ <property name="errs2xsl" location="${xsl.dir}/errs2xsl.xsl"/>
+ <property name="force" value="true"/> 
+ 
+ <target name="wordqa">
+  <fail unless="wordml.file" message='property $wordml.file must be specified'/>
+  <echo message="WordML input: ${wordml.file}"/>
+   
+   <!-- first compile the Schematron schema -->
+   <echo message="compiling Schematron schema ${schema}"></echo>
+   <antcall target="compile.schematron" inheritrefs="true"/>
+  
+  <!-- 1. WordML Schematron -> SVRL --> 
+  <antcall target="wordml.schematron"/>
+  <!-- 2. SVRL -> errs2xsl -> XSL --> 
+  <antcall target="svrl2xslt"/>
+  <!-- 3. WordML -> (2) -> annotated WordML. --> 
+  <antcall target="annotate.wordml"/>
+  
+ </target> 
+ 
+ <target name="wordml.schematron" description="runs Schematron over WordML input to generate SVRL output">
+   <basename suffix=".xml" property="wordml.basename" file="${wordml.file}"/>
+  <xslt 
+   in="${wordml.file}"
+   out="${wordml.basename}.svrl"
+   style="${schema.compiled}"
+   classpath="${saxon.classpath}"
+   force="${force}"/>
+ </target>
+ 
+ <target name="svrl2xslt" description="transforms SVRL to annotation XSLT">
+  <basename suffix=".xml" property="wordml.basename" file="${wordml.file}"/>
+  <xslt 
+   out="${wordml.file}.xsl"
+   in="${wordml.basename}.svrl"
+   style="${errs2xsl}"
+   classpath="${saxon.classpath}"
+   force="${force}"/>
+ </target>
+ 
+ <target name="annotate.wordml" description="annotates WordML source with Schematron error messages">
+  <basename suffix=".xml" property="wordml.basename" file="${wordml.file}"/>
+  <xslt 
+   out="${wordml.basename}-ANNOTATED.xml"
+   in="${wordml.file}"
+   style="${wordml.file}.xsl"
+   classpath="${saxon.classpath}"
+   force="${force}"/>
+ </target>
+ 
+</project>
