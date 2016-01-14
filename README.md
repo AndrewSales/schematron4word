@@ -8,4 +8,4 @@ Schematron validation for OOXML/ODF word-processing documents
     * or in `properties.local.xml`, of which an example is provided.
 1. The annotated version of the original is emitted as `[filename]-ANNOTATED.xml`.
 
-_Tested with <oXygen/> 17.1/Ant 1.9.3_
+_Tested with \<oXygen/> 17.1/Ant 1.9.3_
