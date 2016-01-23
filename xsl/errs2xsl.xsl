@@ -76,10 +76,9 @@
 	</out:template>
 	
 	<xsl:for-each select="distinct-values($errors/@location)">
-		<!--<xsl:message><xsl:value-of select="."/></xsl:message>-->
 		<xsl:variable name="err" select="key('error-by-location', ., $errors-locations-normalized)|key('error-by-location', ., $style-validation-report-doc)"/>
 		<xsl:apply-templates select="$err[1]">	<!-- all the messages reported for this location hang off this node -->
-			<xsl:with-param name="messages" select="$err/svrl:text"/>
+			<xsl:with-param name="messages" select="$err/svrl:text, $err/text()"/>
 		</xsl:apply-templates>
 	</xsl:for-each>
 	
@@ -242,14 +241,22 @@
 </xsl:template>
 	
 	<xsl:template match="svrl:failed-assert | svrl:successful-report | error">
-		<xsl:param name="messages" />
+		<xsl:param name="messages" as="item()+"/>
 		<out:template>
 			<xsl:attribute name="match" select="@location"/>
 			
 			<out:apply-templates select="." mode="annotate">
-				<out:with-param name='message'><xsl:sequence select="$messages"/></out:with-param>
+				<out:with-param name='message'><xsl:apply-templates select="$messages"/></out:with-param>
 			</out:apply-templates>
 		</out:template>
+	</xsl:template>
+	
+	<xsl:template match="error/text()">
+		<svrl:text><xsl:sequence select="."/></svrl:text>
+	</xsl:template>
+	
+	<xsl:template match="svrl:text">
+		<xsl:copy-of select="."/>
 	</xsl:template>
 	
 	<!-- the Steps in XPaths we use to generate key matches need to be QNames,
