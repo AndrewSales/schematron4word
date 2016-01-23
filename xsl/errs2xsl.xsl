@@ -252,7 +252,17 @@
 	</xsl:template>
 	
 	<xsl:template match="error/text()">
-		<svrl:text><xsl:sequence select="."/></svrl:text>
+		<svrl:text>
+			<xsl:choose>
+				<!-- do some re-wording (these messages are Xerces-specific) -->
+				<xsl:when test="starts-with(., 'The content of element type &quot;Document&quot; must match')">
+					<xsl:text>The document contains missing, incorrect or incorrectly ordered styles; expected: </xsl:text>
+					<xsl:value-of select="replace(substring-after(., 'must match'), 'Para.', '' )"/>
+				</xsl:when>
+				<xsl:when test="matches(., '^Element type &quot;[^&quot;]+&quot; must be declared.$')">unrecognised style "<xsl:value-of select="substring-before(substring-after(., '.'), '&quot;')"/>"</xsl:when>
+				<xsl:otherwise><xsl:sequence select="."/></xsl:otherwise>
+			</xsl:choose>			
+		</svrl:text>
 	</xsl:template>
 	
 	<xsl:template match="svrl:text">
